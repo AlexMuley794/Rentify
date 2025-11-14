@@ -1,0 +1,37 @@
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: grid;
+    gap: 3rem;
+    text-align: center;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+}
+
+.btn-primary {
+    background-color: #3490dc;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2779bd;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.feature-text p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #666;
+    align-items: center;
+}
