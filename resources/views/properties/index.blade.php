@@ -5,24 +5,13 @@
 
 @section('content')
 <div class="space-y-8">
-    <!-- Header with Button -->
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Propiedades</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Gestiona todas tus propiedades desde aquí</p>
-        </div>
-        <a href="{{ route('properties.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition duration-200">
-            <i class="fas fa-plus mr-2"></i> Nueva Propiedad
-        </a>
-    </div>
-
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Total</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $properties->total() }}</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $totalProperties }}</p>
                 </div>
                 <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
                     <i class="fas fa-home text-blue-600 dark:text-blue-300 text-2xl"></i>
@@ -33,7 +22,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Disponibles</p>
-                    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{{ $properties->where('status', 'available')->count() }}</p>
+                    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{{ $availableProperties }}</p>
                 </div>
                 <div class="bg-green-100 dark:bg-green-900 p-3 rounded-lg">
                     <i class="fas fa-check-circle text-green-600 dark:text-green-300 text-2xl"></i>
@@ -44,7 +33,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Ocupadas</p>
-                    <p class="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2">{{ $properties->where('status', 'occupied')->count() }}</p>
+                    <p class="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2">{{ $occupiedProperties }}</p>
                 </div>
                 <div class="bg-orange-100 dark:bg-orange-900 p-3 rounded-lg">
                     <i class="fas fa-door-open text-orange-600 dark:text-orange-300 text-2xl"></i>
@@ -77,10 +66,14 @@
                                 <p class="text-gray-600 dark:text-gray-400 text-sm">{{ $property->address }}</p>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $property->type == 'house' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : ($property->type == 'apartment' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200') }}">
-                                    <i class="fas {{ $property->type == 'house' ? 'fa-house' : ($property->type == 'apartment' ? 'fa-door-open' : 'fa-shop') }} mr-1"></i>
-                                    {{ ucfirst(__('properties.' . $property->type, ['default' => $property->type])) }}
-                                </span>
+                                @if($property->type)
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $property->type->value == 'house' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : ($property->type->value == 'apartment' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200') }}">
+                                        <i class="fas {{ $property->type->value == 'house' ? 'fa-house' : ($property->type->value == 'apartment' ? 'fa-building' : 'fa-store') }} mr-1"></i>
+                                        {{ $property->type->label() }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-500">No definido</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <p class="font-semibold text-gray-900 dark:text-white">€{{ number_format($property->price, 2, ',', '.') }}</p>

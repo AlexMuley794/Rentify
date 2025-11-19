@@ -63,8 +63,27 @@ class PropertySeeder extends Seeder
             ],
         ];
 
-        foreach ($properties as $property) {
-            \App\Models\Property::create($property);
+        foreach ($properties as $data) {
+            $status = $data['status'];
+            $tenantId = $data['tenant_id'];
+            
+            unset($data['status']);
+            unset($data['tenant_id']);
+            
+            // Ensure user_id is set (assuming user 1 exists from UserSeeder)
+            $data['user_id'] = 1; 
+
+            $property = \App\Models\Property::create($data);
+
+            if ($status === 'occupied' && $tenantId) {
+                \App\Models\Reservation::create([
+                    'property_id' => $property->id,
+                    'tenant_id' => $tenantId,
+                    'start_date' => now()->subDays(5),
+                    'end_date' => now()->addDays(25),
+                    'total_price' => $property->price,
+                ]);
+            }
         }
     }
 }

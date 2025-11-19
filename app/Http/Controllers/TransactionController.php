@@ -6,15 +6,37 @@ use App\Models\Transaction;
 use App\Models\Property;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Rule;
+
 class TransactionController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $transactions = Transaction::with('property')->paginate(10);
-        return view('transactions.index', compact('transactions'));
+        $user = Auth::user();
+        $query = Transaction::query();
+
+        if (!$user->isAdmin()) {
+            $query->whereHas('property', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
+        // Stats
+        $statsQuery = clone $query;
+        $totalIncome = (clone $statsQuery)->where('type', 'income')->sum('amount');
+        $totalExpenses = (clone $statsQuery)->where('type', 'expense')->sum('amount');
+        $netBalance = $totalIncome - $totalExpenses;
+
+        $transactions = $query->with('property')->latest()->paginate(10);
+
+        return view('transactions.index', compact('transactions', 'totalIncome', 'totalExpenses', 'netBalance'));
     }
 
     /**
@@ -22,7 +44,8 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        $properties = Property::all();
+        $user = Auth::user();
+        $properties = $user->isAdmin() ? Property::all() : Property::where('user_id', $user->id)->get();
         return view('transactions.create', compact('properties'));
     }
 
@@ -32,7 +55,14 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'property_id' => 'required|exists:properties,id',
+            'property_id' => [
+                'required',
+                Rule::exists('properties', 'id')->where(function ($query) {
+                    if (!Auth::user()->isAdmin()) {
+                        $query->where('user_id', Auth::id());
+                    }
+                }),
+            ],
             'type' => 'required|in:income,expense',
             'amount' => 'required|numeric|min:0',
             'concept' => 'required|string|max:255',
@@ -49,6 +79,7 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
+        $this->authorize('view', $transaction);
         $transaction->load('property');
         return view('transactions.show', compact('transaction'));
     }
@@ -58,7 +89,9 @@ class TransactionController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        $properties = Property::all();
+        $this->authorize('update', $transaction);
+        $user = Auth::user();
+        $properties = $user->isAdmin() ? Property::all() : Property::where('user_id', $user->id)->get();
         return view('transactions.edit', compact('transaction', 'properties'));
     }
 
@@ -67,8 +100,17 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
+        $this->authorize('update', $transaction);
+        
         $validated = $request->validate([
-            'property_id' => 'required|exists:properties,id',
+            'property_id' => [
+                'required',
+                Rule::exists('properties', 'id')->where(function ($query) {
+                    if (!Auth::user()->isAdmin()) {
+                        $query->where('user_id', Auth::id());
+                    }
+                }),
+            ],
             'type' => 'required|in:income,expense',
             'amount' => 'required|numeric|min:0',
             'concept' => 'required|string|max:255',
@@ -85,6 +127,7 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
+        $this->authorize('delete', $transaction);
         $transaction->delete();
         return redirect()->route('transactions.index')->with('success', 'Transacción eliminada exitosamente');
     }

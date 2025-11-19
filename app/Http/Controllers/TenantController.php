@@ -5,15 +5,28 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class TenantController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $tenants = Tenant::paginate(10);
-        return view('tenants.index', compact('tenants'));
+        $user = Auth::user();
+        if ($user->isAdmin()) {
+            $tenants = Tenant::withCount('properties')->paginate(10);
+            $tenantsWithPropertiesCount = Tenant::has('properties')->count();
+        } else {
+            $tenants = Tenant::where('user_id', $user->id)->withCount('properties')->paginate(10);
+            $tenantsWithPropertiesCount = Tenant::where('user_id', $user->id)->has('properties')->count();
+        }
+        
+        return view('tenants.index', compact('tenants', 'tenantsWithPropertiesCount'));
     }
 
     /**
@@ -36,6 +49,8 @@ class TenantController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $validated['user_id'] = Auth::id();
+
         Tenant::create($validated);
 
         return redirect()->route('tenants.index')->with('success', 'Inquilino creado exitosamente');
@@ -46,6 +61,7 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
+        $this->authorize('view', $tenant);
         $tenant->load('properties', 'reservations');
         return view('tenants.show', compact('tenant'));
     }
@@ -55,6 +71,7 @@ class TenantController extends Controller
      */
     public function edit(Tenant $tenant)
     {
+        $this->authorize('update', $tenant);
         return view('tenants.edit', compact('tenant'));
     }
 
@@ -63,6 +80,8 @@ class TenantController extends Controller
      */
     public function update(Request $request, Tenant $tenant)
     {
+        $this->authorize('update', $tenant);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -80,6 +99,7 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
+        $this->authorize('delete', $tenant);
         $tenant->delete();
         return redirect()->route('tenants.index')->with('success', 'Inquilino eliminado exitosamente');
     }

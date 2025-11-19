@@ -73,17 +73,7 @@
                         @enderror
                     </div>
 
-                    <!-- Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Estado *</label>
-                        <select id="status" name="status" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition">
-                            <option value="available" {{ old('status', $property->status) == 'available' ? 'selected' : '' }}>✓ Disponible</option>
-                            <option value="occupied" {{ old('status', $property->status) == 'occupied' ? 'selected' : '' }}>⊗ Ocupada</option>
-                        </select>
-                        @error('status')
-                            <p class="text-red-500 text-sm mt-2 flex items-center"><i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Status removed as it is derived from reservations -->
                 </div>
             </div>
 

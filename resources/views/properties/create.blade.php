@@ -76,39 +76,7 @@
                         @enderror
                     </div>
 
-                    <!-- Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Estado *</label>
-                        <select id="status" name="status" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition">
-                            <option value="">Selecciona un estado</option>
-                            <option value="available" {{ old('status', $property->status ?? '') == 'available' ? 'selected' : '' }}>✓ Disponible</option>
-                            <option value="occupied" {{ old('status', $property->status ?? '') == 'occupied' ? 'selected' : '' }}>⊗ Ocupada</option>
-                        </select>
-                        @error('status')
-                            <p class="text-red-500 text-sm mt-2 flex items-center"><i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section: Inquilino Asignado -->
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <i class="fas fa-user-tie text-indigo-600 mr-3"></i>Inquilino Asignado
-                </h2>
-                <div>
-                    <label for="tenant_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Selecciona un Inquilino (Opcional)</label>
-                    <select id="tenant_id" name="tenant_id" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition">
-                        <option value="">Sin inquilino asignado</option>
-                        @foreach($tenants as $tenant)
-                            <option value="{{ $tenant->id }}" {{ old('tenant_id', $property->tenant_id ?? '') == $tenant->id ? 'selected' : '' }}>
-                                {{ $tenant->name }} ({{ $tenant->email }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('tenant_id')
-                        <p class="text-red-500 text-sm mt-2 flex items-center"><i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}</p>
-                    @enderror
+                    <!-- Status and Tenant sections removed as they are now derived from reservations -->
                 </div>
             </div>
 

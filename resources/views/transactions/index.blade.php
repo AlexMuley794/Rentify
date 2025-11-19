@@ -22,7 +22,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Total Ingresos</p>
-                    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">€{{ number_format($transactions->where('type', 'income')->sum('amount'), 2, ',', '.') }}</p>
+                    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">€{{ number_format($totalIncome, 2, ',', '.') }}</p>
                 </div>
                 <div class="bg-green-100 dark:bg-green-900 p-3 rounded-lg">
                     <i class="fas fa-arrow-up text-green-600 dark:text-green-300 text-2xl"></i>
@@ -33,7 +33,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Total Gastos</p>
-                    <p class="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">€{{ number_format($transactions->where('type', 'expense')->sum('amount'), 2, ',', '.') }}</p>
+                    <p class="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">€{{ number_format($totalExpenses, 2, ',', '.') }}</p>
                 </div>
                 <div class="bg-red-100 dark:bg-red-900 p-3 rounded-lg">
                     <i class="fas fa-arrow-down text-red-600 dark:text-red-300 text-2xl"></i>
@@ -44,7 +44,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Balance Neto</p>
-                    <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">€{{ number_format($transactions->where('type', 'income')->sum('amount') - $transactions->where('type', 'expense')->sum('amount'), 2, ',', '.') }}</p>
+                    <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">€{{ number_format($netBalance, 2, ',', '.') }}</p>
                 </div>
                 <div class="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-lg">
                     <i class="fas fa-balance-scale text-indigo-600 dark:text-indigo-300 text-2xl"></i>

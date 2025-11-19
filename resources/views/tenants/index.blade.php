@@ -33,7 +33,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Con Propiedades</p>
-                    <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{{ $tenants->whereHas('properties')->count() }}</p>
+                    <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{{ $tenantsWithPropertiesCount }}</p>
                 </div>
                 <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
                     <i class="fas fa-check-circle text-blue-600 dark:text-blue-300 text-2xl"></i>
@@ -69,7 +69,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                    <i class="fas fa-home mr-1"></i> {{ $tenant->properties->count() }}
+                                    <i class="fas fa-home mr-1"></i> {{ $tenant->properties_count }}
                                 </span>
                             </td>
                             <td class="px-6 py-4">
@@ -116,5 +116,4 @@
         </div>
     </div>
 </div>
-@endsection
 @endsection

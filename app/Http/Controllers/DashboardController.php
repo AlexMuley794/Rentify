@@ -15,8 +15,14 @@ class DashboardController extends Controller
     {
         // Estadísticas generales
         $totalProperties = Property::count();
-        $availableProperties = Property::where('status', 'available')->count();
-        $occupiedProperties = Property::where('status', 'occupied')->count();
+        
+        $occupiedProperties = Property::whereHas('reservations', function ($query) {
+            $query->where('start_date', '<=', now())
+                  ->where('end_date', '>=', now());
+        })->count();
+        
+        $availableProperties = $totalProperties - $occupiedProperties;
+        
         $totalTenants = Tenant::count();
 
         // Ingresos y gastos (usar 0 como valor por defecto si no hay datos)
@@ -34,8 +40,7 @@ class DashboardController extends Controller
             ->get();
 
         // Propiedades recientes
-        $recentProperties = Property::with('tenant')
-            ->orderBy('created_at', 'desc')
+        $recentProperties = Property::orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 

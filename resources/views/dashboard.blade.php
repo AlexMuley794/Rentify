@@ -215,6 +215,8 @@
     </div>
 </div>
 
+@endsection
+
 @section('scripts')
 <script>
     // Income Chart with better styling
@@ -294,5 +296,4 @@
         }
     });
 </script>
-@endsection
 @endsection

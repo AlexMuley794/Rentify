@@ -2,20 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Property extends Model
 {
     protected $fillable = [
-        'name',
+        'user_id',
+        'title', 
         'address',
-        'status',
-        'tenant_id',
+        'type',
+        'price',
+        'description',
+        'image_path',
     ];
 
-    public function tenant()
+    protected $casts = [
+        'type' => \App\Enums\PropertyType::class,
+    ];
+
+    // Relationships
+    public function user()
     {
-        return $this->belongsTo(Tenant::class);
+        return $this->belongsTo(User::class);
     }
 
     public function reservations()
@@ -28,13 +39,39 @@ class Property extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    public function isAvailable()
+    // Accessors & Helpers
+    public function getIsOccupiedAttribute(): bool
     {
-        return $this->status === 'available';
+        // Check if there is any active reservation for today
+        return $this->reservations()
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->exists();
     }
 
-    public function isOccupied()
+    public function getCurrentTenantAttribute()
     {
-        return $this->status === 'occupied';
+        $reservation = $this->reservations()
+            ->with('tenant')
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+
+        return $reservation ? $reservation->tenant : null;
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->is_occupied ? 'Ocupada' : 'Disponible';
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return $this->is_occupied ? 'red' : 'green';
+    }
+
+    public function getStatusAttribute(): string
+    {
+        return $this->is_occupied ? 'occupied' : 'available';
     }
 }
