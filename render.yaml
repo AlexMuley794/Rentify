@@ -1,13 +1,8 @@
 services:
   - type: web
     name: rentify
-    env: php
+    runtime: docker # Updated to use Docker for maximum reliability
     plan: free
-    buildCommand: ./render-build.sh
-    # Render points to the project root by default. 
-    # For Laravel, it's better to set the root as 'public' in the dashboard or use a redirect.
-    # However, Render's native PHP environment often handles 'public/' if it's a Laravel app.
-    # We can also add a 'startCommand' if needed, but for PHP it uses Apache by default.
     envVars:
       - key: APP_ENV
         value: production
