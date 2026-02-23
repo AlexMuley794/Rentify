@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: rentify
+    runtime: php
+    plan: free
+    buildCommand: ./render-build.sh
+    # Render native PHP environment uses Apache by default.
+    # We need to tell it to use the public folder.
+    # We do this by setting the document root in the dashboard or via environment variables if supported,
+    # but the most reliable way for Laravel on Render is to use the 'root' attribute or a custom start command.
+    # Actually, Render handles Laravel's public directory automatically if it detects it's a Laravel app,
+    # or you can set public as the root directory in the dashboard.
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        fromContext: git.url
+      - key: APP_KEY
+        sync: false # Set this in the Render dashboard manually or generate it
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: rentify-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: rentify-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: rentify-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: rentify-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: rentify-db
+          property: password
+      # Render PHP Specifics
+      - key: WEB_CONCURRENCY
+        value: 1
+
+databases:
+  - name: rentify-db
+    plan: free
